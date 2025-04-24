@@ -1,6 +1,7 @@
 import pickle
 import pandas as pd
 import streamlit as st
+import auth  # Importing the authentication script
 
 # --- Page Config ---
 st.set_page_config(page_title="Movie Recommender", layout="centered")
@@ -23,33 +24,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- Session State for Login ---
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-
-# --- Login Page ---
-if not st.session_state.logged_in:
-    st.markdown("<div class='title'>🔐 Login to Continue</div>", unsafe_allow_html=True)
-    with st.form("login_form"):
-        col1, col2 = st.columns(2)
-        with col1:
-            first_name = st.text_input("First Name")
-        with col2:
-            last_name = st.text_input("Last Name")
-
-        mobile = st.text_input("Mobile Number")
-        password = st.text_input("Password", type="password")
-
-        login_btn = st.form_submit_button("Login")
-
-        if login_btn:
-            if all([first_name, last_name, mobile, password]):
-                st.success(f"Welcome, {first_name} 👋")
-                st.session_state.logged_in = True
-            else:
-                st.warning("Please fill in all fields to login.")
-
-# --- Main App ---
+# --- Proceed if logged in ---
 if st.session_state.logged_in:
     # --- Load Data ---
     movies_dict = pickle.load(open('movie_dict.pkl', 'rb'))
@@ -65,7 +40,7 @@ if st.session_state.logged_in:
 
     # --- UI Starts ---
     st.markdown("<div class='title'>🎥 Movie Recommender System</div>", unsafe_allow_html=True)
-    st.write("Pick a movie you like and get 5 similar recommendations!")
+    st.write(f"Welcome, **{st.session_state.username}**! Pick a movie you like and get 5 similar recommendations.")
 
     # --- Movie Dropdown ---
     selected_movie = st.selectbox("Select a movie", movies['title'].values)
